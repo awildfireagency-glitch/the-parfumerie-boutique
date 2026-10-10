@@ -73,7 +73,7 @@
   // Real bottle photo from the sheet (or notes.js); the drawn bottle sits behind it and
   // shows if the photo is missing or fails to load.
   const bottle = p => p.photo
-    ? `<span class="bwrap">${drawn(p)}<img class="bphoto" src="${esc(p.photo)}" alt="${esc(p.brand + " " + p.name)} bottle" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"></span>`
+    ? `<span class="bwrap">${drawn(p)}<img class="bphoto" src="${esc(p.photo)}" alt="${esc(p.brand + " " + p.name)} bottle" loading="lazy" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('loaded')" onerror="this.remove()"></span>`
     : drawn(p);
 
   const badges = p => (p.rare ? `<span class="badge rare">Rare</span>` : "") + (p.fast ? `<span class="badge fast">Fast moving</span>` : "");

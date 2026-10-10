@@ -106,8 +106,10 @@ dialog[open]{animation:pop .25s ease}
 
 /* Bottle photos layered over the drawn fallback */
 .bwrap{position:relative;display:inline-block;line-height:0}
-.bphoto{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:var(--soft)}
-.dimg .bphoto{background:var(--card)}
+.bwrap .bphoto,.dimg .bwrap .bphoto,.pimg .bwrap .bphoto{position:absolute;inset:0;width:100%;height:100%;max-width:none;object-fit:contain;background:var(--soft)}
+.dimg .bwrap .bphoto{background:var(--card)}
+/* Once the real photo loads, hide the drawn bottle so it can't peek out */
+.bwrap.loaded svg{visibility:hidden}
 .pimg .bwrap svg{height:200px;width:auto}
 .dimg .bwrap{width:100%;max-width:220px}
 .dimg .bwrap svg{width:100%;height:auto}
