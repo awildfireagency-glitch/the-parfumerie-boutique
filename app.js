@@ -15,15 +15,16 @@
 
   // Each note maps to an icon family; unknown notes fall back to "default".
   const NOTE_FAMILY = {
-    citrus: ["Bergamot","Lemon","Grapefruit","Mandarin","Petitgrain","Orange"],
-    fruit: ["Pineapple","Apple","Black Currant","Pear","Dates","Plum"],
-    floral: ["Jasmine","Rose","Iris","Violet","Orange Blossom","Tuberose","Geranium"],
-    green: ["Violet Leaf","Mint","Lavender","Oregano","Absinthe","Birch","Oakmoss","Fir Resin"],
-    spice: ["Pepper","Black Pepper","Pink Pepper","Sichuan Pepper","Cardamom","Cinnamon","Nutmeg","Ginger","Saffron","Elemi"],
-    wood: ["Cedar","Sandalwood","Vetiver","Patchouli","Amberwood","Papyrus","Oud"],
+    citrus: ["Bergamot","Lemon","Lime","Grapefruit","Mandarin","Orange","Blood Orange","Petitgrain","Neroli"],
+    fruit: ["Pineapple","Apple","Black Currant","Pear","Dates","Plum","Peach","Strawberry","Raspberry","Blackberry","Sour Cherry","Quince","Sapodilla","Tropical Fruits","Coconut"],
+    floral: ["Jasmine","Jasmine Sambac","Rose","Turkish Rose","May Rose","White Rose","Iris","Violet","Orange Blossom","Tuberose","Geranium","Freesia","Hyacinth","Mimosa","Ylang-Ylang","Gardenia","Magnolia","Peony","Olive Blossom","Lily of the Valley","Osmanthus","Narcissus","Heliotrope","Orchid","Vanilla Orchid","Rangoon Creeper","African Marigold","Cyclamen","Carnation"],
+    green: ["Violet Leaf","Mint","Lavender","Oregano","Absinthe","Birch","Oakmoss","Fir Resin","Juniper","Clary Sage","Green Tea","Galbanum","Pine Needles","Buchu"],
+    aquatic: ["Sea Notes"],
+    spice: ["Pepper","Black Pepper","Pink Pepper","Sichuan Pepper","Cardamom","Cinnamon","Nutmeg","Ginger","Saffron","Elemi","Star Anise","Caraway","Coriander"],
+    wood: ["Cedar","Sandalwood","Vetiver","Patchouli","Amberwood","Papyrus","Oud","Agarwood","Guaiac Wood","Mahogany","Olive Tree","Blond Woods","Woody Notes"],
     resin: ["Amber","Labdanum","Incense","Myrrh","Benzoin","Opoponax","Ambergris","Ambroxan","Ambrox"],
-    sweet: ["Vanilla","Tonka Bean","Praline","Coffee","Tobacco"],
-    musk: ["Musk","Leather"]
+    sweet: ["Vanilla","Black Vanilla Husk","Tonka Bean","Praline","Coffee","Tobacco","Toffee","Caramel","Honey","Beeswax","Licorice","Almond","Cacao","Whipped Cream","Gourmand Accord","Rum"],
+    musk: ["Musk","White Musk","Chantilly Musk","Ambrette","Cashmeran","Aldehydes","Leather"]
   };
   const familyOf = n => Object.keys(NOTE_FAMILY).find(f => NOTE_FAMILY[f].includes(n)) || "default";
 
@@ -36,6 +37,7 @@
     wood: '<rect x="10" y="22" width="40" height="22" rx="4" fill="#b88a5c"/><path d="M14 28h30M14 34h26M14 40h32" stroke="#8a6544" stroke-width="1.5"/><ellipse cx="50" cy="33" rx="7" ry="11" fill="#d9b48a" stroke="#8a6544" stroke-width="2"/><ellipse cx="50" cy="33" rx="3" ry="5" fill="none" stroke="#8a6544" stroke-width="1.5"/>',
     resin: '<path d="M32 8c10 14 16 22 16 32a16 16 0 0 1-32 0c0-10 6-18 16-32z" fill="#d99a2b"/><path d="M26 34c0 6 3 10 8 11" stroke="#fbe08a" stroke-width="3" fill="none" stroke-linecap="round"/>',
     sweet: '<path d="M30 54C28 40 26 22 30 8" stroke="#3b2414" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M38 54c2-14 4-32 0-46" stroke="#5a3a20" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="20" cy="46" r="7" fill="#f3e2b8"/>',
+    aquatic: '<circle cx="32" cy="32" r="22" fill="#cfe7f2"/><path d="M12 30c5-5 9-5 14 0s9 5 14 0 9-5 14 0M12 40c5-5 9-5 14 0s9 5 14 0 9-5 14 0" stroke="#3b8bb5" stroke-width="3" fill="none" stroke-linecap="round"/>',
     musk: '<circle cx="32" cy="32" r="20" fill="#d8cfc4"/><circle cx="26" cy="28" r="10" fill="#efe8df" opacity=".9"/><circle cx="38" cy="36" r="9" fill="#c4b8aa" opacity=".8"/>',
     default: '<circle cx="32" cy="32" r="18" fill="#c9b99a"/>'
   };
@@ -79,11 +81,14 @@
   const $ = s => document.querySelector(s);
   const state = { cat: "all", q: "", gender: "", rare: false, sort: "brand", shown: PAGE };
 
+  // Lowercase and strip accents so "acqua di gio" finds "Acqua di Giò".
+  const fold = s => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
   function filtered() {
-    const q = state.q.trim().toLowerCase();
+    const q = fold(state.q.trim());
     const list = P.filter(p => (state.cat === "all" || p.category === state.cat) &&
       (!state.gender || p.gender === state.gender) && (!state.rare || p.rare) &&
-      (!q || [p.brand, p.name, p.type, ...(p.notes ? [...p.notes.top, ...p.notes.heart, ...p.notes.base] : [])].join(" ").toLowerCase().includes(q)));
+      (!q || fold([p.brand, p.name, p.type, ...(p.notes ? [...p.notes.top, ...p.notes.heart, ...p.notes.base] : [])].join(" ")).includes(q)));
     const by = {
       brand: (a, b) => a.brand.localeCompare(b.brand) || a.name.localeCompare(b.name),
       low: (a, b) => (a.price || 1e9) - (b.price || 1e9),
